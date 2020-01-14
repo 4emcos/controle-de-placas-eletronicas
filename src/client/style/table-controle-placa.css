@@ -1,0 +1,44 @@
+
+/* -- */
+
+#user-container-modal{  
+    text-align: center;
+    border: none;
+    margin-left: -95px;
+    
+  }
+  
+  #item-user-modal{
+    padding: 10px;
+    margin: 5px;
+    max-width: 250px;
+    
+  }
+  
+  #ibage-modal{
+    margin-left: 110px;
+  
+  }
+  
+  #nome-user-modal{
+    font-size: 26px;
+    min-width: 250px;  
+    
+  
+  }
+  #funcao-user-modal{
+    min-width: 600px;  
+    
+    font-size: 20px; 
+    
+  }
+  #text-input-modal{
+    text-align: center;
+  }
+  
+  
+  #butoes-entrar-sair-modal{  
+    justify-content: space-evenly;
+  }
+
+  /* -- */

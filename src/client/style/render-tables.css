@@ -1,0 +1,67 @@
+
+.grid-container {
+    min-width: 90%;
+    border: none;
+  }
+
+  
+#grid-item { 
+    display: flex;
+    justify-content: center;
+    min-width: 200px;
+    
+  }
+  
+#user-container{  
+    
+    margin-left: -50px;
+    
+    
+  }
+  
+  #box-user-log{
+    border: none;
+    max-width: 650px;
+    margin-top: 15px;
+  }
+
+  
+  #item-user{
+    padding: 10px;
+    margin: 5px;
+    max-width: 200px;
+    
+  }
+  
+  #nome-user{
+    font-size: 26px;
+    min-width: 600px;
+    margin-left: -220px;
+  }
+  
+  
+  #nome-funcao {
+    padding-left: 20px;
+  }
+  
+  #funcao-user{
+    font-size: 20px;
+    margin-right: -10vh;
+    padding-left: -1vh;
+    padding-right: 10vh;
+    /*
+    margin-left: -150px;
+    margin-right: -308px;
+    font-size: 20px; */
+  }
+  #text-input{
+    text-align: center;
+  }
+  #ibage{
+    margin-left: 39px;
+  
+  }
+  
+  #butoes-entrar-sair{  
+    justify-content: space-evenly;
+  }
