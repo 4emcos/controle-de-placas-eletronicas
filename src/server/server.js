@@ -16,6 +16,7 @@ const server = new ApolloServer({
         require('./graph-ql/funcao-user'),
         require('./graph-ql/placas-embratex'),
         require('./graph-ql/placas-wentex'),
+        require('./graph-ql/verified-users')
       //  require('./graph-ql/dados')
 
     ],

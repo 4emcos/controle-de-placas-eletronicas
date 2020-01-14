@@ -10,13 +10,12 @@ import '../style/table-controle-placa.css'
 import ButtonBoots from 'react-bootstrap/Button'
 import {Paper} from '@material-ui/core'
 import RemoveCircleOutlineIcon from '@material-ui/icons/RemoveCircleOutline';
+import { parse } from 'date-fns';
 
 var userAtual 
 var verifiedIsOn = false
 var unidade 
 
-
-var kwonVerifiedUSers = [ '00115070297', '00115068195', '00115016640', '00115001201', '00115045179', '00115062170']
 
 const DELETE_PLACA_EMB =  gql`
         mutation delEmb ($idPlaca: ID) {
@@ -111,6 +110,8 @@ const UPDATE_PLACA_WTX = gql`
           }         
       }
       `;
+
+      
 
 const CREATE_NEW_PLACA_WTX =  gql`
       mutation createPlaca($nomePlaca: String, $quantidade: Int, $situacao: String, $local: String, $qtdParaSituacaoBaixa:Int,  $qtdParaSituacaoOk: Int, $regUltimaEdicao : String, $fotoUltimoUser: String){
@@ -228,15 +229,6 @@ function ModificaValoresDeOKENivelBaixo(props) {
   );
 }
 
-function isVerified(params) {
-  kwonVerifiedUSers.forEach(element => {
-    //console.log(element == params ? true : false)
-   if(params == element) verifiedIsOn = true
-  });
-  
-}
-
-
 
 function getNomeAndSobrenome(nome) {
   var list = []
@@ -253,15 +245,17 @@ function getNomeAndSobrenome(nome) {
 function GetVerfiedUsers(props) {
   const [showModal, setShowModal] = useState (false);
   const [reg, setReg ] = useState ('a');
-  const [value, setValue] = useState ();
+  const [value, setValue] = useState();
   const [nome, setNome]  = useState('');
   const [funcao, setFuncao] = useState ('');
   const [foto, setFoto] = useState('');
   const [nomeFuncao, setNomeFuncao] = useState();
+  const [verifiedUser, setVerifiedUser] = useState();
+  const [senha, setSenha] = useState();
 
   const GET_USER = gql`
       
-    query Funcao($idFuncao : String) { 
+    query usersData($idFuncao : String, $reg: String) { 
       lista_funcao (id_funcao : $idFuncao){
         nome_funcao
         }
@@ -272,11 +266,20 @@ function GetVerfiedUsers(props) {
           lista_funcao
           foto
       }
-    }
+
+        users_verificado(registro: $reg){
+          senha
+          registro
+          nome
+        }
+    }    
   `;
 
   const {loading, error, refetch, data} = useQuery(GET_USER,{
-          variables : {idFuncao : funcao}
+          variables : {
+            idFuncao : funcao,
+            reg : verifiedUser
+          }
           })
 
 
@@ -286,14 +289,16 @@ function GetVerfiedUsers(props) {
 
     if (data != undefined && data.atualiza_colaborador != null) {
         setFuncao(data.atualiza_colaborador.lista_funcao)
-        
+        setVerifiedUser(value)
+
         refetch().then( (e) => setNomeFuncao(e.data.lista_funcao != null ? e.data.lista_funcao.nome_funcao : '') )
+        
+        console.log(data)
+        console.log(verifiedUser)
+        handleLogon()
         setNome(data.atualiza_colaborador.nome)
         //setFuncao(data.atualiza_colaborador.lista_funcao)
         setFoto(data.atualiza_colaborador.foto)  
-        handleLogon()
-        
-        
         //
   
     } else { 
@@ -308,21 +313,24 @@ function GetVerfiedUsers(props) {
 
 
   function handleLogon () { 
-        isVerified(data == undefined || data.atualiza_colaborador == null ? null : data.atualiza_colaborador.registro);
-        userAtual = data
-        if (verifiedIsOn) {
-          setShowModal(props.onHide)  
-        }
-        
+    if (data.users_verificado != null){
+      userAtual = data
+      verifiedIsOn = true
+      setShowModal(props.onHide)
+    } else {
+      verifiedIsOn = false
+    }
+    
   }
 
   function handleLogout() {
-    
-    verifiedIsOn = false;
     setNome('');
     setFuncao('');
     setFoto(Ibage);
     setReg(null)
+    setValue(null)
+    setVerifiedUser (null)
+    verifiedIsOn = false
   }
   
 
@@ -351,7 +359,7 @@ function GetVerfiedUsers(props) {
                    xs={{ order: 1 }}> 
   
   
-                <FormField id ="text-input-modal" label="Registro:" htmlFor="text-input-modal" {...props} >
+                <FormField id ="text-input-modal" label="Login :" htmlFor="text-input-modal" {...props} >
                   <TextInput
                       placeholder="registro"
                       type = "text" 
@@ -361,25 +369,35 @@ function GetVerfiedUsers(props) {
                         {
                           switch (e.target.value.length) {
                               case 5:
-                                setValue(`"001150${e.target.value}"`)
+                                setValue(`001150${e.target.value}`)
+                                
                               break;
   
                               case 3:
-                                setValue(`"00115000${e.target.value}"`)
+                                setValue(`00115000${e.target.value}`)
+                                
                               break;
   
                               case 4:
-                                setValue(`"0011500${e.target.value}"`)
+                                setValue(`0011500${e.target.value}`)
+                                
                               break;
   
                               case 6:
-                                setValue(`"00115${e.target.value}"`)
+                                setValue(`00115${e.target.value}`)
+                                
                               break;
                           }         
                         }}
-                        onKeyDown = {(e) => e.key == 'Enter' ? setReg(value) : ''}
+                        onKeyDown = {(e) => {
+                          if(e.key == 'Enter') {
+                             setReg(`"${value}"`)
+                            setVerifiedUser(value)
+                            }
+                      }}
                         
                         />
+                  
                 </FormField>
                     
                 <Row
@@ -390,8 +408,10 @@ function GetVerfiedUsers(props) {
                       primary 
                       color = {"#00739D"}
                       label="Entrar" 
-                      onClick = {() => {
-                        setReg(value)
+                      onClick = {() =>{
+                         
+                             setReg(`"${value}"`)
+                            setVerifiedUser(value)
                        
                       }}
                     
@@ -832,7 +852,6 @@ function TableControleDePlacas(props) {
           <GetVerfiedUsers
           show={modalShow}
           onHide={(e) => {
-            console.log(e)
             setModalShow(false)
           }}
         />

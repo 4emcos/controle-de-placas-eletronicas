@@ -24,6 +24,7 @@ const sequelize = new Sequelize('controle_placas_sys', 'root', '123456', {
 let models = [
     require('../models/placas-embratex'),
     require('../models/placas-wentex'),
+    require('../models/verified-users')
 ]
 
 // Initialize models
