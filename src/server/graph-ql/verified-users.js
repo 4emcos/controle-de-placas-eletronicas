@@ -12,13 +12,14 @@ export const typeDefs = gql`
         registro: String
         senha: String
         nome: String
+        is_verified: String
     }
 
 `
 export const resolvers = {
     Query: {
-        users_verificados: async (args) => dbUsers.users_verificados.findAll(),
-        users_verificado: async (obj, args, context, info) => dbUsers.users_verificados.findByPk(args.registro)
+        users_verificados: async (args) => dbUsers.users_system.findAll(),
+        users_verificado: async (obj, args, context, info) => dbUsers.users_system.findByPk(args.registro)
     },
 }
 

@@ -9,225 +9,10 @@ import {Grommet , FormField, Button, TextInput, Text, Heading, Image} from 'grom
 import '../style/table-controle-placa.css'
 import ButtonBoots from 'react-bootstrap/Button'
 import {Paper} from '@material-ui/core'
-import RemoveCircleOutlineIcon from '@material-ui/icons/RemoveCircleOutline';
-import { parse } from 'date-fns';
+import * as Mutation from '../gql-consts/mutations'
 
 var userAtual 
 var verifiedIsOn = false
-var unidade 
-
-
-const DELETE_PLACA_EMB =  gql`
-        mutation delEmb ($idPlaca: ID) {
-          deletePlacaEmb (idPlaca : $idPlaca)
-        }
-        `;
-
-const UPDATE_PLACA_EMB = gql`
-      mutation updatePlaca($idPlaca: ID, $nomePlaca: String, $quantidade: Int, $situacao: String, $local: String, $qtdParaSituacaoBaixa:Int,  $qtdParaSituacaoOk: Int, $regUltimaEdicao: String, $fotoUltimoUser: String){
-        updatePlacaEmb (
-           idPlaca: $idPlaca, 
-           nomePlaca: $nomePlaca,
-           quantidade: $quantidade, 
-           situacao:$situacao, 
-           local:$local,
-           qtdParaSituacaoBaixa : $qtdParaSituacaoBaixa
-           qtdParaSituacaoOk: $qtdParaSituacaoOk
-           regUltimaEdicao : $regUltimaEdicao
-           fotoUltimoUser : $ fotoUltimoUser
-
-           )
-           {
-            idPlaca
-            nomePlaca
-            quantidade
-            situacao
-            local
-            qtdParaSituacaoBaixa
-            qtdParaSituacaoOk
-            regUltimaEdicao
-            fotoUltimoUser
-          }         
-      }
-      `;
-
-const CREATE_NEW_PLACA_EMB =  gql`
-      mutation createPlaca($nomePlaca: String, $quantidade: Int, $situacao: String, $local: String, $qtdParaSituacaoBaixa:Int,  $qtdParaSituacaoOk: Int, $regUltimaEdicao : String, $fotoUltimoUser: String){
-        createPlacaEmb (
-          nomePlaca: $nomePlaca ,
-          quantidade: $quantidade, 
-          situacao:$situacao, 
-          local:$local,
-          qtdParaSituacaoBaixa : $qtdParaSituacaoBaixa
-          qtdParaSituacaoOk: $qtdParaSituacaoOk
-          regUltimaEdicao : $regUltimaEdicao
-          fotoUltimoUser : $ fotoUltimoUser
-          )
-          {
-            nomePlaca
-            quantidade
-            situacao
-            local
-            qtdParaSituacaoBaixa
-            qtdParaSituacaoOk
-            regUltimaEdicao
-            fotoUltimoUser
-          }         
-      }
-      `;
-
-
-const DELETE_PLACA_WTX =  gql`
-  mutation delEmb ($idPlaca: ID) {
-    deletePlacaWentex (idPlaca : $idPlaca)
-  }
-  `;
-
-const UPDATE_PLACA_WTX = gql`
-      mutation updatePlaca($idPlaca: ID, $nomePlaca: String, $quantidade: Int, $situacao: String, $local: String, $qtdParaSituacaoBaixa:Int,  $qtdParaSituacaoOk: Int, $regUltimaEdicao: String, $fotoUltimoUser: String){
-        updatePlacaWentex (
-           idPlaca: $idPlaca, 
-           nomePlaca: $nomePlaca,
-           quantidade: $quantidade, 
-           situacao:$situacao, 
-           local:$local,
-           qtdParaSituacaoBaixa : $qtdParaSituacaoBaixa
-           qtdParaSituacaoOk: $qtdParaSituacaoOk
-           regUltimaEdicao : $regUltimaEdicao
-           fotoUltimoUser : $ fotoUltimoUser
-
-           )
-           {
-            idPlaca
-            nomePlaca
-            quantidade
-            situacao
-            local
-            qtdParaSituacaoBaixa
-            qtdParaSituacaoOk
-            regUltimaEdicao
-            fotoUltimoUser
-          }         
-      }
-      `;
-
-      
-
-const CREATE_NEW_PLACA_WTX =  gql`
-      mutation createPlaca($nomePlaca: String, $quantidade: Int, $situacao: String, $local: String, $qtdParaSituacaoBaixa:Int,  $qtdParaSituacaoOk: Int, $regUltimaEdicao : String, $fotoUltimoUser: String){
-        createPlacaWentex (
-          nomePlaca: $nomePlaca ,
-          quantidade: $quantidade, 
-          situacao:$situacao, 
-          local:$local,
-          qtdParaSituacaoBaixa : $qtdParaSituacaoBaixa
-          qtdParaSituacaoOk: $qtdParaSituacaoOk
-          regUltimaEdicao : $regUltimaEdicao
-          fotoUltimoUser : $ fotoUltimoUser
-          )
-          {
-            nomePlaca
-            quantidade
-            situacao
-            local
-            qtdParaSituacaoBaixa
-            qtdParaSituacaoOk
-            regUltimaEdicao
-            fotoUltimoUser
-          }         
-      }
-      `;
-
-function ModificaValoresDeOKENivelBaixo(props) {
-  const [updatePlaca, {dados}] = useMutation(!unidade.indexOf("placasEmbratex") ? UPDATE_PLACA_EMB : UPDATE_PLACA_WTX)
-  const [modalState, setModalState] = useState();
-  const [valueOK, setValueOK] = useState();
-  const [valueNvBaixo, setValueNvBaixo] = useState(0);
-  const GET_ALL_BOARDS =  gql`
-
-  query get_board{ 
-    ${unidade[0]}{
-      idPlaca
-      nomePlaca
-      quantidade
-      situacao
-      local
-      qtdParaSituacaoBaixa
-      qtdParaSituacaoOk
-      dataUltimaEdicao
-      regUltimaEdicao
-      fotoUltimoUser
-    }
-  }
-  `;
-
-  const {refetch} = useQuery(GET_ALL_BOARDS)
-
-  const handleClick = _ => {
-    updatePlaca({
-      variables: {
-        idPlaca  : parseInt(props.data.idPlaca),
-        nomePlaca : props.data.nomePlaca,
-        quantidade : parseInt(props.data.quantidade),
-        situacao : props.data.situacao,
-        local : props.data.local,
-        qtdParaSituacaoBaixa: parseInt(valueNvBaixo),
-        qtdParaSituacaoOk: parseInt(valueOK),
-        regUltimaEdicao: userAtual.atualiza_colaborador.registro,
-        fotoUltimoUser: userAtual.atualiza_colaborador.foto
-    }}).then(() => {
-    
-      refetch(GET_ALL_BOARDS)
-      setModalState(props.onHide)
-    })
-
-  }
-
-  return (
-    <Modal
-      {...props}
-      size="lg"
-      aria-labelledby="contained-modal-title-vcenter"
-      centered
-    >
-      <Modal.Header closeButton>
-        <Modal.Title id="contained-modal-title-vcenter">
-            Alteração de situação da placa {props.data.nomePlaca}
-        </Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-
-            <Form >
-            <Row>
-              <Col>
-              <Form.Group controlId="formOk">
-                <Form.Label> Quantidade :</Form.Label>
-                <Form.Control required type="numeric" onInput = {(e) => setValueOK(e.target.value)}/>
-                <Form.Text className="text-muted">
-                  Quantidade de placas para a situação ficar ok
-                </Form.Text>
-              </Form.Group> 
-              </Col>
-              <Col>
-             
-              </Col>
-            </Row>
-        
-            </Form>
-            <ButtonBoots 
-              variant="primary" 
-              type="aa"
-              onClick ={handleClick}
-              >
-                Salvar
-              </ButtonBoots>
-      </Modal.Body>
-      <Modal.Footer>
-        <ButtonBoots onClick={props.onHide}>Close</ButtonBoots>
-      </Modal.Footer>
-    </Modal>
-  );
-}
 
 
 function getNomeAndSobrenome(nome) {
@@ -256,6 +41,7 @@ function GetVerfiedUsers(props) {
   const GET_USER = gql`
       
     query usersData($idFuncao : String, $reg: String) { 
+
       lista_funcao (id_funcao : $idFuncao){
         nome_funcao
         }
@@ -266,11 +52,11 @@ function GetVerfiedUsers(props) {
           lista_funcao
           foto
       }
-
         users_verificado(registro: $reg){
           senha
           registro
           nome
+          is_verified
         }
     }    
   `;
@@ -282,9 +68,6 @@ function GetVerfiedUsers(props) {
           }
           })
 
-
-  const close = () => props.onHide
-  
   useEffect (() => { 
 
     if (data != undefined && data.atualiza_colaborador != null) {
@@ -313,7 +96,7 @@ function GetVerfiedUsers(props) {
 
 
   function handleLogon () { 
-    if (data.users_verificado != null){
+    if (data.users_verificado != null && data.users_verificado.is_verified == "true"){
       userAtual = data
       verifiedIsOn = true
       setShowModal(props.onHide)
@@ -355,7 +138,7 @@ function GetVerfiedUsers(props) {
                    xs> <Image id = 'ibage-modal' variant="center" src= {`data:image/jpg;base64,${foto}`} style={{ width: '5.6rem' ,  height: '7rem' }} /></Col>
                   
                   <Col
-                  id = "item-user-modal"
+                  id = "item-user-modal" 
                    xs={{ order: 1 }}> 
   
   
@@ -397,6 +180,7 @@ function GetVerfiedUsers(props) {
                       }}
                         
                         />
+                        
                   
                 </FormField>
                     
@@ -457,33 +241,6 @@ function GetVerfiedUsers(props) {
 }
 
 
-function RenderAlterarSituacoesBtn(props) {
-  const [modalShow, setModalShow] = useState();
-  
-
-  return (
-        <ButtonToolbar>
-          <ButtonBoots
-          id = {`idBtn${props.idBtn}`}
-          variant="primary" 
-          onClick={() => setModalShow(true)}
-          > 
-          Alterar Situação
-          </ButtonBoots>
-
-          <ModificaValoresDeOKENivelBaixo
-            unidadeatual = {props.unidadeAtual}
-            data = {props.data}
-            user = {userAtual}
-            show={modalShow}
-            onHide={() => setModalShow(false)}
-          />
-
-        </ButtonToolbar>
-    ); 
-  }
-
-
 function TableControleDePlacas(props) {
     
     
@@ -519,9 +276,9 @@ function TableControleDePlacas(props) {
     `;
 
 
-    const [newPlaca, {lotOfData}] = useMutation(!unidadeAtual.indexOf("placasEmbratex") ? CREATE_NEW_PLACA_EMB : CREATE_NEW_PLACA_WTX)
-    const [updatePlaca, {dados}] = useMutation(!unidadeAtual.indexOf("placasEmbratex") ? UPDATE_PLACA_EMB : UPDATE_PLACA_WTX)
-    const [delEmb, {id}] = useMutation(!unidadeAtual.indexOf("placasEmbratex") ? DELETE_PLACA_EMB : DELETE_PLACA_WTX);
+    const [newPlaca, {lotOfData}] = useMutation(!unidadeAtual.indexOf("placasEmbratex") ? Mutation.CREATE_NEW_PLACA_EMB : Mutation.CREATE_NEW_PLACA_WTX)
+    const [updatePlaca, {dados}] = useMutation(!unidadeAtual.indexOf("placasEmbratex") ? Mutation.UPDATE_PLACA_EMB : Mutation.UPDATE_PLACA_WTX)
+    const [delEmb, {id}] = useMutation(!unidadeAtual.indexOf("placasEmbratex") ? Mutation.DELETE_PLACA_EMB : Mutation.DELETE_PLACA_WTX);
 
 
     const {loading, error, refetch, data} = useQuery(GET_ALL_BOARDS , {
@@ -544,7 +301,7 @@ function TableControleDePlacas(props) {
           <b> {rowData.quantidade} </b>
         )
         },
-        { title: "Quantidade necessária", field: 'qtdParaSituacaoOk',  editable: 'never', type: 'numeric',
+        { title: "Quantidade necessária", field: 'qtdParaSituacaoOk', editable: 'never',  type: 'numeric',
         render: rowData => 
         {
           if (rowData != undefined && rowData.qtdParaSituacaoOk != undefined){
@@ -562,23 +319,6 @@ function TableControleDePlacas(props) {
             rowData != undefined ? rowData.situacao == 'ok' ? <StatusGood color= 'green' /> : rowData.quantidade < 0 ? <StatusWarning color='#f5090d'/>: rowData.quantidade == 0 ? <SubtractCircle  color= '#fc5800'/> : <CircleInformation color = {'#514000'}/> : ''
         )
         },
-        
-        { title: 'Quantidade para Saldo Ok', field: 'saldoOk',  type: 'numeric', hidden: true},
-
-        { title: 'Alterar Situação', field: 'setSituacao', hidden: true , editable: 'never',
-        render: rowData => {
-          if (rowData != undefined ) {
-            
-            return( 
-              <>
-              <RenderAlterarSituacoesBtn unidadeAtual={unidadeAtual} idBtn = {rowData.tableData.id} data = {rowData} userAtual = {props} /> 
-              </>
-            ) 
-          } else return ''
-        }
-       
-        },
-
         
         {
           title: 'Usuário',
@@ -614,13 +354,12 @@ function TableControleDePlacas(props) {
                   quantidade : parseInt(newData.quantidade),
                   situacao : newData.situacao,
                   local : newData.local,
-                  qtdParaSituacaoBaixa: newData.qtdParaSituacaoBaixa,
-                  qtdParaSituacaoOk: newData.qtdParaSituacaoOk,
+                  qtdParaSituacaoBaixa: parseInt(newData.qtdParaSituacaoBaixa),
+                  qtdParaSituacaoOk: parseInt(newData.qtdParaSituacaoOk),
                   regUltimaEdicao: reg,
                   fotoUltimoUser: foto
-    
+                  
               }}).then(() => refetch({query: GET_ALL_BOARDS}))
-      
               setState(prevState => {
                 const data = [...prevState.data];
                 data[data.indexOf(oldData)] = newData
@@ -674,8 +413,8 @@ function TableControleDePlacas(props) {
                   quantidade : parseInt(newData.quantidade),
                   situacao : newData.situacao,
                   local : newData.local,
-                  qtdParaSituacaoBaixa: newData.qtdParaSituacaoBaixa,
-                  qtdParaSituacaoOk: newData.qtdParaSituacaoOk,
+                  qtdParaSituacaoBaixa: parseInt(newData.qtdParaSituacaoOk),
+                  qtdParaSituacaoOk: parseInt(newData.qtdParaSituacaoOk),
                   regUltimaEdicao: userAtual.atualiza_colaborador.registro,
                   fotoUltimoUser: userAtual.atualiza_colaborador.foto
     
@@ -737,15 +476,17 @@ function TableControleDePlacas(props) {
       if(verifiedIsOn){
         setColumns( prevState => {
           const data = [...prevState.coluna];
-          data[5].hidden = false
+          
           data[0].editable = 'always'
+          data[2].editable = 'always'
           return {...prevState, data}
         })
       } else {
         setColumns( prevState => {
           const data = [...prevState.coluna];
-          data[5].hidden = true
+          
           data[0].editable = 'never'
+          data[2].editable = 'never'
           return {...prevState, data}
         })
       }
@@ -753,7 +494,6 @@ function TableControleDePlacas(props) {
 
     useEffect (() => {
       setUnidadeAtual(props.unidade)
-      unidade = props.unidade
       verifiedIsOn = false
       modifyColumns();
     },[props.unidade])

@@ -1,5 +1,5 @@
 module.exports = function(sequelize, DataTypes) {
-	return sequelize.define('users_verificados', {
+	return sequelize.define('users_system', {
 		registro: {
 			type: DataTypes.STRING(20),
 			allowNull: false,
@@ -12,9 +12,14 @@ module.exports = function(sequelize, DataTypes) {
         nome: {
             type: DataTypes.STRING(100),
             allowNull: false
-        }
+		},
+		is_verified: {
+			type: DataTypes.STRING(5),
+			allowNull:false
+
+		}
 	}, {
-		tableName: 'users_verificados',
+		tableName: 'users_system',
 		timestamps: false
 	});
 };
