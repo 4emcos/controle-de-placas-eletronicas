@@ -1,17 +1,14 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState} from 'react';
 import './App.css';
 import { ApolloClient } from 'apollo-client'
 import { createHttpLink } from 'apollo-link-http'
 import { InMemoryCache } from 'apollo-cache-inmemory'
 import { ApolloProvider } from '@apollo/react-hooks';
-import RepeatIcon from '@material-ui/icons/Repeat';
-//import { Grommet } from 'grommet';
+
+
 import Button from 'react-bootstrap/Button'
-import {Paper} from '@material-ui/core'
 import TelaInicial from './client/components/tela-inicial'
 import {PowerCycle} from 'grommet-icons'
-
-
 const httpLink = createHttpLink({
   uri: 'http://132.1.6.117:5000/graphql'
 })
@@ -35,7 +32,7 @@ function App(props) {
         
           Unidade Atual :&nbsp;<b> {` ${unidade}`} </b> &nbsp; &nbsp;  
           <Button
-            onClick = {() => unidade == 'Wentex' ? setUnidade('Embratex') : setUnidade('Wentex') }
+            onClick = {() => unidade === 'Wentex' ? setUnidade('Embratex') : setUnidade('Wentex') }
 
           > <PowerCycle color = {'white'}/> </Button>
           

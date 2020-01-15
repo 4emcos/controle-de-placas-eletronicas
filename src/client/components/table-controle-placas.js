@@ -1,11 +1,11 @@
 import React, {useState, useEffect } from 'react';
-import MaterialTable, {MTableEditRow } from 'material-table';
+import MaterialTable from 'material-table';
 import gql from 'graphql-tag'
 import {useMutation, useQuery} from '@apollo/react-hooks';
 import * as Ibage from '../../userExample'
-import {ButtonToolbar, Modal, Form, Col, Row, Container} from 'react-bootstrap'
+import {Modal, Col, Row, Container} from 'react-bootstrap'
 import {StatusGood,  StatusWarning, CircleInformation, SubtractCircle} from 'grommet-icons';
-import {Grommet , FormField, Button, TextInput, Text, Heading, Image} from 'grommet';
+import {FormField, Button, TextInput, Text, Heading, Image} from 'grommet';
 import '../style/table-controle-placa.css'
 import ButtonBoots from 'react-bootstrap/Button'
 import {Paper} from '@material-ui/core'
@@ -17,7 +17,7 @@ var verifiedIsOn = false
 
 function getNomeAndSobrenome(nome) {
   var list = []
-  if(nome != null){
+  if(nome !== null){
     list[0] = nome.toString().split(' ')[0] 
     list[1] = nome.toString().split(' ')[1] 
     return `${list[0]} ${list[1]}`
@@ -36,7 +36,6 @@ function GetVerfiedUsers(props) {
   const [foto, setFoto] = useState('');
   const [nomeFuncao, setNomeFuncao] = useState();
   const [verifiedUser, setVerifiedUser] = useState();
-  const [senha, setSenha] = useState();
 
   const GET_USER = gql`
       
@@ -61,7 +60,7 @@ function GetVerfiedUsers(props) {
     }    
   `;
 
-  const {loading, error, refetch, data} = useQuery(GET_USER,{
+  const {refetch, data} = useQuery(GET_USER,{
           variables : {
             idFuncao : funcao,
             reg : verifiedUser
@@ -70,14 +69,13 @@ function GetVerfiedUsers(props) {
 
   useEffect (() => { 
 
-    if (data != undefined && data.atualiza_colaborador != null) {
+    if (data !== undefined && data.atualiza_colaborador !== null) {
         setFuncao(data.atualiza_colaborador.lista_funcao)
         setVerifiedUser(value)
 
-        refetch().then( (e) => setNomeFuncao(e.data.lista_funcao != null ? e.data.lista_funcao.nome_funcao : '') )
+        refetch().then( (e) => setNomeFuncao(e.data.lista_funcao !== null ? e.data.lista_funcao.nome_funcao : '') )
         
-        console.log(data)
-        console.log(verifiedUser)
+     
         handleLogon()
         setNome(data.atualiza_colaborador.nome)
         //setFuncao(data.atualiza_colaborador.lista_funcao)
@@ -96,7 +94,7 @@ function GetVerfiedUsers(props) {
 
 
   function handleLogon () { 
-    if (data.users_verificado != null && data.users_verificado.is_verified == "true"){
+    if (data.users_verificado !== null && data.users_verificado.is_verified === "true"){
       userAtual = data
       verifiedIsOn = true
       setShowModal(props.onHide)
@@ -173,7 +171,7 @@ function GetVerfiedUsers(props) {
                           }         
                         }}
                         onKeyDown = {(e) => {
-                          if(e.key == 'Enter') {
+                          if(e.key === 'Enter') {
                              setReg(`"${value}"`)
                             setVerifiedUser(value)
                             }
@@ -276,12 +274,12 @@ function TableControleDePlacas(props) {
     `;
 
 
-    const [newPlaca, {lotOfData}] = useMutation(!unidadeAtual.indexOf("placasEmbratex") ? Mutation.CREATE_NEW_PLACA_EMB : Mutation.CREATE_NEW_PLACA_WTX)
-    const [updatePlaca, {dados}] = useMutation(!unidadeAtual.indexOf("placasEmbratex") ? Mutation.UPDATE_PLACA_EMB : Mutation.UPDATE_PLACA_WTX)
-    const [delEmb, {id}] = useMutation(!unidadeAtual.indexOf("placasEmbratex") ? Mutation.DELETE_PLACA_EMB : Mutation.DELETE_PLACA_WTX);
+    const [newPlaca] = useMutation(!unidadeAtual.indexOf("placasEmbratex") ? Mutation.CREATE_NEW_PLACA_EMB : Mutation.CREATE_NEW_PLACA_WTX)
+    const [updatePlaca] = useMutation(!unidadeAtual.indexOf("placasEmbratex") ? Mutation.UPDATE_PLACA_EMB : Mutation.UPDATE_PLACA_WTX)
+    const [delEmb] = useMutation(!unidadeAtual.indexOf("placasEmbratex") ? Mutation.DELETE_PLACA_EMB : Mutation.DELETE_PLACA_WTX);
 
 
-    const {loading, error, refetch, data} = useQuery(GET_ALL_BOARDS , {
+    const { refetch, data} = useQuery(GET_ALL_BOARDS , {
       variables : {idPlaca : 1}
     });
 
@@ -304,7 +302,7 @@ function TableControleDePlacas(props) {
         { title: "Quantidade necessária", field: 'qtdParaSituacaoOk', editable: 'never',  type: 'numeric',
         render: rowData => 
         {
-          if (rowData != undefined && rowData.qtdParaSituacaoOk != undefined){
+          if (rowData !== undefined && rowData.qtdParaSituacaoOk !== undefined){
             return (
               <b> {rowData.qtdParaSituacaoOk} </b>
             )
@@ -316,7 +314,7 @@ function TableControleDePlacas(props) {
         render: rowData =>  
         ( 
           // 
-            rowData != undefined ? rowData.situacao == 'ok' ? <StatusGood color= 'green' /> : rowData.quantidade < 0 ? <StatusWarning color='#f5090d'/>: rowData.quantidade == 0 ? <SubtractCircle  color= '#fc5800'/> : <CircleInformation color = {'#514000'}/> : ''
+            rowData !== undefined ? rowData.situacao === 'ok' ? <StatusGood color= 'green' /> : rowData.quantidade < 0 ? <StatusWarning color='#f5090d'/>: rowData.quantidade === 0 ? <SubtractCircle  color= '#fc5800'/> : <CircleInformation color = {'#514000'}/> : ''
         )
         },
         
@@ -328,7 +326,7 @@ function TableControleDePlacas(props) {
             (
               <img
                 style={{ height: 36, borderRadius: '50%' }}
-                src={`data:image/png;base64,${rowData == undefined ? '' : rowData.fotoUltimoUser }`}
+                src={`data:image/png;base64,${rowData === undefined ? '' : rowData.fotoUltimoUser }`}
               />
             )
         },
@@ -403,7 +401,7 @@ function TableControleDePlacas(props) {
       onRowUpdate: (newData, oldData) =>
         new Promise(resolve => {
           setTimeout(() => {
-            console.log(newData)
+            
             resolve();
             if (oldData) {
               updatePlaca({
@@ -446,12 +444,12 @@ function TableControleDePlacas(props) {
         })}
 
     function requests() {
-      if(data != undefined){
+      if(data !== undefined){
 
         if (!unidadeAtual.indexOf('placasWentex')) {
           var tempList = []
           for (let i = 0; i < data.placasWentex.length; i++) {
-            if (data.placasWentex[i].local == `${props.local}`) {
+            if (data.placasWentex[i].local === `${props.local}`) {
               tempList.push(data.placasWentex[i])
               //data.placasEmbratex.splice(i) 
             }         
@@ -459,7 +457,7 @@ function TableControleDePlacas(props) {
         } else {
           var tempList = []
           for (let i = 0; i < data.placasEmbratex.length; i++) {
-            if (data.placasEmbratex[i].local == `${props.local}`) {
+            if (data.placasEmbratex[i].local === `${props.local}`) {
               tempList.push(data.placasEmbratex[i])
               //data.placasEmbratex.splice(i) 
             }         
@@ -515,7 +513,7 @@ function TableControleDePlacas(props) {
 
 
     useEffect (() => {
-      if (userAtual != null) {
+      if (userAtual !== null) {
         modifyColumns();
         setIsEditable(verifiedIsOn)
         setFoto(userAtual.userImg)
@@ -532,26 +530,34 @@ function TableControleDePlacas(props) {
       <>
         <Paper elevation = {3}>
         <MaterialTable
-            title= {props.local == "Cardas" ? `Controle de placas das ${props.local} ` : props.local == "Fuso" ? `Controle de placas do ${props.local}` : `Controle de placas da ${props.local}`  }
+            title= {props.local === "Cardas" ? `Controle de placas das ${props.local} ` : props.local === "Fuso" ? `Controle de placas do ${props.local}` : `Controle de placas da ${props.local}`  }
             columns={columns.coluna}
             data={state.data}
             tableRef={tableRef}
           
             options = {{
                 pageSize : 9,
-                pageSizeOptions : [9, 10, 15, 30, 50, 100],
+                pageSizeOptions : [9, 15, 30, 50, 100],
                 rowStyle: rowData => ({
-                  backgroundColor: rowData.situacao == 'ok' && rowData.quantidade != 0 ? '#eaf4de' :  rowData.quantidade === 0 ?  '#ffebb2' :  rowData.quantidade > 0 ? '#fbefca' :  '#fed0d2' 
+                  backgroundColor: rowData.situacao === 'ok' && rowData.quantidade !== 0 ? '#eaf4de' :  rowData.quantidade === 0 ?  '#ffebb2' :  rowData.quantidade > 0 ? '#fbefca' :  '#fed0d2' 
                 })
             }}
             localization={{
                 pagination: {
-                    labelDisplayedRows: '{from}-{to} de {count}'
+                    labelDisplayedRows: '{from}-{to} de {count}',
+                    previousTooltip : "Página anterior",
+                    nextTooltip : "Proxima página",
+                    lastTooltip: "Última página",
+                    firstTooltip: "Primeira página",
+                    labelRowsSelect : "linhas"
+
                 },
                 toolbar: {
                     nRowsSelected: '{0} linha(s) selecionadas',
                     searchTooltip: "Pesquisar",
                     searchPlaceholder: "Pesquisar"
+                    
+                 
                 },
                 header: {
                     actions: 'Ações'
@@ -575,7 +581,7 @@ function TableControleDePlacas(props) {
                 }
             }}
 
-              editable={isEditable == true ? verifiedIsOn == true ? editableForVerifiedUsers : editableForUnverifiedUsers  : null }
+              editable={isEditable === true ? verifiedIsOn === true ? editableForVerifiedUsers : editableForUnverifiedUsers  : null }
               actions={[
                 {
                   icon: 'settings',
@@ -665,9 +671,15 @@ CREATE TABLE  `controle_placas_sys`.`placas_embratex` (
 PRIMARY KEY (`idPlaca`)
 ) AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
-
-
-
-
-
+        onKeyDown : function  onKeyDown(e){
+              if(e.key == 'Enter'){
+                var newData = _this2.state.data;
+                delete newData.tableData;
+                _this2.props.onEditingApproved(_this2.props.mode, _this2.state.data, _this2.props.data);
+              }
+              if(e.key == 'Escape') {
+                _this2.props.onEditingCanceled(_this2.props.mode, _this2.props.data);
+                
+              }
+            },
 */

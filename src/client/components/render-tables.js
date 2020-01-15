@@ -4,16 +4,16 @@ import gql from 'graphql-tag'
 import * as Ibage from '../../userExample'
 import {Grommet, Box, FormField, TextInput, Button,Text, Heading, Image} from 'grommet';
 import TableControleDePlacas from './table-controle-placas'
-import {Row, Container, Col,Modal} from 'react-bootstrap';
+import {Row, Container, Col} from 'react-bootstrap';
 import '../style/render-tables.css'
 
 
 function getNomeAndSobrenome(nome) {
     var list = []
-    if(nome != null && nome != undefined){
+    if(nome !== null && nome !== undefined){
       list[0] = nome.toString().split(' ')[0] 
       list[1] = nome.toString().split(' ')[1] 
-      console.log(nome)
+    
       return `${list[0]} ${list[1]}`
     }  
     else { return ''}
@@ -65,26 +65,23 @@ function TableGeral (props) {
         }
       `;
   
-    const {loading, error, refetch, data} = useQuery(GET_USER,{
+    const {refetch, data} = useQuery(GET_USER,{
       variables : {idFuncao : funcao}
     })
   
   
     useEffect (() => {
   
-      if (data != undefined && data.atualiza_colaborador != null) {
+      if (data !== undefined && data.atualiza_colaborador !== null) {
         setFuncao(data.atualiza_colaborador.lista_funcao)
-        refetch().then( (e) => setNomeFuncao(e.data.lista_funcao != null ? e.data.lista_funcao.nome_funcao : '') )
+        refetch().then( (e) => setNomeFuncao(e.data.lista_funcao !== null ? e.data.lista_funcao.nome_funcao : '') )
         setNome(data.atualiza_colaborador.nome)
         //setFuncao(data.atualiza_colaborador.lista_funcao)
         setRegToGo(data.atualiza_colaborador.registro)
         setFoto(data.atualiza_colaborador.foto)  
         //
   
-        data.atualiza_colaborador.nome !== null || 
-        data.atualiza_colaborador.nome !== undefined
-        ? 
-        setUserOn(true) : setUserOn(false)
+        data.atualiza_colaborador.nome !== null || data.atualiza_colaborador.nome !== undefined ? setUserOn(true) : setUserOn(false)
       } else { 
         setUserOn(false)
         setNome(null)
@@ -105,7 +102,7 @@ function TableGeral (props) {
         
     return (
       <Grommet theme= {customFormFieldTheme }>
-          <TableControleDePlacas id = 'grid-item' unidade = {props.unidade} local = {props.local} user = {userOn} userImg = {userOn == true ? foto : false}  userReg = {regToGo} />
+          <TableControleDePlacas id = 'grid-item' unidade = {props.unidade} local = {props.local} user = {userOn} userImg = {userOn === true ? foto : false}  userReg = {regToGo} />
           <Box 
           id = 'box-user-log'
           border 
@@ -157,7 +154,7 @@ function TableGeral (props) {
                                 break;
                             }         
                             }}
-                            onKeyDown = {(e) => e.key == 'Enter' ? setReg(value) : ''}
+                            onKeyDown = {(e) => e.key === 'Enter' ? setReg(value) : ''}
                             
                             />
                     </FormField>

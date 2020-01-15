@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {Row, Container, Col, Card, Button, Table, Collapse } from 'react-bootstrap';
+import {Row, Container, Col, Button, Collapse } from 'react-bootstrap';
 import TableGeral from './render-tables'
 import '../style/tela-inicial.css'
 
@@ -39,7 +39,7 @@ function TelaInicial(props) {
             }
           
 
-        if (props.unidade == "Wentex") {
+        if (props.unidade === "Wentex") {
           const elOfOem = document.getElementById('placas-openend360-button')
           elOfOem.classList.add('allow')
           if (!openOemTable) {
@@ -82,7 +82,7 @@ function TelaInicial(props) {
                   <Collapse in={openAbTable}>
                   <div id="placas-abertura-collapse">
                    
-                  <TableGeral local = {'Abertura'} unidade = {props.unidade == "Embratex" ? ['placasEmbratex', 'placaEmbratex'] : ['placasWentex', 'placaWentex']} />
+                  <TableGeral local = {'Abertura'} unidade = {props.unidade === "Embratex" ? ['placasEmbratex', 'placaEmbratex'] : ['placasWentex', 'placaWentex']} />
                  
                   </div>
                  </Collapse>   
@@ -104,7 +104,7 @@ function TelaInicial(props) {
   
               <Collapse in={openCaTable}>
               <div id="placas-cardas-collapse">
-              <TableGeral local = {'Cardas'} unidade = {props.unidade == "Embratex" ? ['placasEmbratex', 'placaEmbratex'] : ['placasWentex', 'placaWentex']} />
+              <TableGeral local = {'Cardas'} unidade = {props.unidade === "Embratex" ? ['placasEmbratex', 'placaEmbratex'] : ['placasWentex', 'placaWentex']} />
               </div>
             </Collapse> 
             
@@ -124,7 +124,7 @@ function TelaInicial(props) {
   
               <Collapse in={openFuTable}>
               <div id="placas-fuso-collapse">
-              <TableGeral local = {'Fuso'} unidade = {props.unidade == "Embratex" ? ['placasEmbratex', 'placaEmbratex'] : ['placasWentex', 'placaWentex']} />
+              <TableGeral local = {'Fuso'} unidade = {props.unidade === "Embratex" ? ['placasEmbratex', 'placaEmbratex'] : ['placasWentex', 'placaWentex']} />
               </div>
               </Collapse> 
           </Col>
@@ -143,7 +143,7 @@ function TelaInicial(props) {
 
             <Collapse in={openOeTable}>
             <div id="placas-openend-collapse">
-            <TableGeral local = {'Openend'} unidade = {props.unidade == "Embratex" ? ['placasEmbratex', 'placaEmbratex'] : ['placasWentex', 'placaWentex']} />
+            <TableGeral local = {'Openend'} unidade = {props.unidade === "Embratex" ? ['placasEmbratex', 'placaEmbratex'] : ['placasWentex', 'placaWentex']} />
             </div>
             </Collapse> 
 
@@ -152,18 +152,18 @@ function TelaInicial(props) {
           <Col > 
   
           <Button
-            id = {props.unidade == "Wentex" ? 'placas-openend360-button' : 'placas-oerieter-button'}
+            id = {props.unidade === "Wentex" ? 'placas-openend360-button' : 'placas-oerieter-button'}
             className = "button-inicial"
             onClick={() => setOpenOemTable(!openOemTable)}
             aria-controls="placas-mutableoe-collapse"
             aria-expanded={openOemTable}
           >
-            {props.unidade == "Wentex" ? `Placas da Open-end 360` : `Placas da OE Rieter`}
+            {props.unidade === "Wentex" ? `Placas da Open-end 360` : `Placas da OE Rieter`}
           </Button>
 
           <Collapse in={openOemTable}>
           <div id="placas-mutableoe-collapse">
-          <TableGeral local = {props.unidade == "Wentex" ? `Openend360` : `Oerieter`} unidade = {props.unidade == "Embratex" ? ['placasEmbratex', 'placaEmbratex'] : ['placasWentex', 'placaWentex']} />
+          <TableGeral local = {props.unidade === "Wentex" ? `Openend360` : `Oerieter`} unidade = {props.unidade === "Embratex" ? ['placasEmbratex', 'placaEmbratex'] : ['placasWentex', 'placaWentex']} />
           </div>
           </Collapse> 
 
