@@ -13,7 +13,6 @@ function getNomeAndSobrenome(nome) {
     if(nome !== null && nome !== undefined){
       list[0] = nome.toString().split(' ')[0] 
       list[1] = nome.toString().split(' ')[1] 
-    
       return `${list[0]} ${list[1]}`
     }  
     else { return ''}

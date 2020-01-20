@@ -4,66 +4,78 @@ import TableGeral from './render-tables'
 import '../style/tela-inicial.css'
 
 
+
+
+
+
 function TelaInicial(props) {
     const [openAbTable, setOpenAbTable] = useState(false);
     const [openCaTable, setOpenCaTable] = useState(false);
     const [openFuTable, setOpenFuTable] = useState(false);
     const [openOeTable, setOpenOeTable] = useState(false);
     const [openOemTable, setOpenOemTable] = useState(false);
-    
+
+    const ops = [
+      {renderTextOp: 'Placas da Abertura', nameOp: 'abertura',  hook: openAbTable, setHook: setOpenAbTable},
+      {renderTextOp: 'Placas das Cardas', nameOp: 'cardas', hook: openCaTable, setHook: setOpenCaTable},
+      {renderTextOp: 'Placas do fuso', nameOp: 'fuso', hook: openFuTable, setHook: setOpenFuTable},
+      {renderTextOp: 'Placas da Open-End', nameOp: 'openend', hook: openOeTable, setHook: setOpenOeTable},
+      {renderTextOp: props.unidade === "Embratex" ? 'Placas da OE Rieter' : 'Placas da Open-End 360' , 
+      nameOp:  props.unidade === "Embratex" ? 'oerieter' : 'openend360', hook: openOemTable, setHook: setOpenOemTable},
+      
+      ]
+
+
     useEffect (() => {
-        const elOfAb = document.getElementById("placas-abertura-button")
-        elOfAb.classList.add('allow')          
-        if (!openAbTable){
-            elOfAb.classList.remove('allow')
-           }
-
-        const elOfCa = document.getElementById("placas-cardas-button")
-        elOfCa.classList.add('allow')          
-        if (!openCaTable){
-            elOfCa.classList.remove('allow')
-            }
-
-
-        const elOfFu = document.getElementById("placas-fuso-button")
-        elOfFu.classList.add('allow')          
-        if (!openFuTable){
-            elOfFu.classList.remove('allow')
-            }
-
-          
-        const elOfOe = document.getElementById("placas-openend-button")
-        elOfOe.classList.add('allow')          
-        if (!openOeTable){
-          elOfOe.classList.remove('allow')
-            }
-          
-
-        if (props.unidade === "Wentex") {
-          const elOfOem = document.getElementById('placas-openend360-button')
-          elOfOem.classList.add('allow')
-          if (!openOemTable) {
-            elOfOem.classList.remove('allow')
-          }
-  
-        } else { 
-          const elOfOem = document.getElementById('placas-oerieter-button')
-          elOfOem.classList.add('allow')
-          if (!openOemTable) {
-            elOfOem.classList.remove('allow')
-          }
-        }
-        
-       
+        ops.map((op => {
+          const el = document.getElementById(`placas-${op.nameOp}-button`)
+          el.classList.add('allow')          
+          if (!op.hook){
+            el.classList.remove('allow')
+             }
+        }))
         
     })
 
    
     return ( 
 
-              
+        ops.map((op, id) => 
+        (
+        <Container className = "grid-container">
+        <Row id = 'grids'>
 
-        
+          <Col> 
+                <Button
+                    id = {`placas-${op.nameOp}-button`}
+                    className = "button-inicial"
+                    onClick={() =>  op.setHook(!op.hook)}
+                    aria-controls= {`placas-${op.nameOp}-collapse`}
+                    aria-expanded={op.hook}
+                  >
+                   {op.renderTextOp}
+                  </Button>
+  
+                  <Collapse in={op.hook}>
+                  <div id= {`placas-${op.nameOp}-collapse`}>
+                   
+                  <TableGeral local = {op.nameOp} unidade = {props.unidade === "Embratex" ? ['placasEmbratex', 'placaEmbratex'] : ['placasWentex', 'placaWentex']} />
+                 
+                  </div>
+                 </Collapse>   
+          </Col>
+        </Row> 
+        </Container>
+  
+        ))    
+      
+    );
+  }
+
+  export default TelaInicial;
+
+  /* 
+      
         <Container className = "grid-container">
         <Row id = 'grids'>
         
@@ -173,9 +185,7 @@ function TelaInicial(props) {
 
         </Row> 
         </Container>
-    );
     
-  }
 
-
-  export default TelaInicial;
+  
+  */
