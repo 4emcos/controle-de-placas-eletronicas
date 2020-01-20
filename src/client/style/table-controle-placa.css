@@ -1,44 +1,63 @@
 
 /* -- */
 
-#user-container-modal{  
-    text-align: center;
-    border: none;
-    margin-left: -95px;
-    
-  }
+.modal-90w{
+  max-width: 50%;
+}
+
+
+#box-user-log-modal{
+  border: none;
+  margin-top: 15px;
+  max-width: 60%;
   
-  #item-user-modal{
-    padding: 10px;
-    margin: 5px;
-    max-width: 250px;
-    
-  }
+}
+
+#entrar-user-modal{
+  font-size: 26px;
+  margin-right: 40px;
+}
+
+
+#nome-user-modal{
+  font-size: 31px;
+}
+
+
+
+#nome-funcao-modal{
   
-  #ibage-modal{
-    margin-left: 110px;
+}
+
+#data-users-modal{
+  margin-left: -40vh;
+}
+
+#funcao-user-modal{
+  font-size: 20px;
+  margin-bottom: 30px;
+}
+
+#text-input-modal{
+  text-align: center;
+  max-width: 88%;
+  margin-right: 55px;
   
-  }
+}
+
+#botoes-modal{
+  margin-left: 11%;
+}
+
+#senha-input-modal{
+
+  text-align: center;
   
-  #nome-user-modal{
-    font-size: 26px;
-    min-width: 250px;  
-    
-  
-  }
-  #funcao-user-modal{
-    min-width: 600px;  
-    
-    font-size: 20px; 
-    
-  }
-  #text-input-modal{
-    text-align: center;
-  }
-  
-  
-  #butoes-entrar-sair-modal{  
-    justify-content: space-evenly;
-  }
+}
+#ibage-modal{
+  margin-left: 39px;
+  margin-bottom: 30%;
+}
+
 
   /* -- */

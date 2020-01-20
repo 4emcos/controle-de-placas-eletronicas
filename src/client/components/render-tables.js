@@ -6,7 +6,7 @@ import {Grommet, Box, FormField, TextInput, Button,Text, Heading, Image} from 'g
 import TableControleDePlacas from './table-controle-placas'
 import {Row, Container, Col} from 'react-bootstrap';
 import '../style/render-tables.css'
-
+import {Hide , View} from 'grommet-icons';
 
 function getNomeAndSobrenome(nome) {
     var list = []
@@ -22,10 +22,7 @@ function getNomeAndSobrenome(nome) {
 const customFormFieldTheme = {
   global:{
     colors:{
-      control :{
-        light : "black",
-        dark : 'black'
-      }
+     brand: 'red'
     }
   },
 
@@ -38,6 +35,7 @@ const customFormFieldTheme = {
 };
 
 
+
 function TableGeral (props) {
     const [nome, setNome]  = useState('');
     const [funcao, setFuncao] = useState ();
@@ -47,10 +45,17 @@ function TableGeral (props) {
     const [regToGo, setRegToGo] = useState ();
     const [foto, setFoto] = useState(Ibage.img);
     const [userOn, setUserOn] = useState();
-  
+    const [reveal, setReveal] = useState(false);
+
+    const [verifiedUser, setVerifiedUser] = useState();
+    const [checkSenha, setCheckSenha] = useState();
+
+    const [fistTime, setFirstTime] = useState ();
+
+
     const GET_USER = gql`
       
-        query Funcao($idFuncao : String) { 
+        query Funcao($idFuncao : String, $reg: String) { 
           lista_funcao (id_funcao : $idFuncao){
             nome_funcao
             }
@@ -61,27 +66,47 @@ function TableGeral (props) {
               lista_funcao
               foto
           }
+          users_verificado(registro: $reg){
+            senha
+            registro
+            nome
+            is_verified
+          }
+
         }
       `;
   
     const {refetch, data} = useQuery(GET_USER,{
-      variables : {idFuncao : funcao}
+      variables : {
+        idFuncao : funcao,
+        reg : verifiedUser
+      }
     })
   
   
     useEffect (() => {
   
       if (data !== undefined && data.atualiza_colaborador !== null) {
+          
         setFuncao(data.atualiza_colaborador.lista_funcao)
-        refetch().then( (e) => setNomeFuncao(e.data.lista_funcao !== null ? e.data.lista_funcao.nome_funcao : '') )
-        setNome(data.atualiza_colaborador.nome)
-        //setFuncao(data.atualiza_colaborador.lista_funcao)
-        setRegToGo(data.atualiza_colaborador.registro)
-        setFoto(data.atualiza_colaborador.foto)  
-        //
-  
-        data.atualiza_colaborador.nome !== null || data.atualiza_colaborador.nome !== undefined ? setUserOn(true) : setUserOn(false)
-      } else { 
+        refetch()
+        
+        if (checkSenha == data.users_verificado.senha) {
+          setNomeFuncao(data.lista_funcao !== null ? data.lista_funcao.nome_funcao : ' ')
+          setNome(data.atualiza_colaborador.nome)
+          //setFuncao(data.atualiza_colaborador.lista_funcao)
+          setRegToGo(data.atualiza_colaborador.registro)
+          setFoto(data.atualiza_colaborador.foto)  
+          //
+          data.atualiza_colaborador.nome !== null || data.atualiza_colaborador.nome !== undefined ? setUserOn(true) : setUserOn(false)  
+        } else {
+
+          setReg(null)
+          setCheckSenha(null)
+        }
+      
+
+     } else { 
         setUserOn(false)
         setNome(null)
         setFuncao(null)
@@ -92,122 +117,177 @@ function TableGeral (props) {
    
     
   function handleLogout() {
-    setNome('');
-    setFuncao('');
-    setFoto(Ibage);
+    document.getElementById('senha-input').value = null
+    document.getElementById('text-input').value = null
+    setNome(null);
+    setFuncao(null);
+    setFoto(Ibage.img);
     setReg(null)
-    setNomeFuncao('')
+    setNomeFuncao(null)
+    setValue(null)
+    setCheckSenha(null)
   }
         
     return (
       <Grommet theme= {customFormFieldTheme }>
           <TableControleDePlacas id = 'grid-item' unidade = {props.unidade} local = {props.local} user = {userOn} userImg = {userOn === true ? foto : false}  userReg = {regToGo} />
-          <Box 
+          
+          
+        <Box 
           id = 'box-user-log'
+          direction = "row-responsive"
           border 
           align="center"
+          gap = "medium"
           elevation = "medium"
           background = "white"
-          
           >
-              <Container id = "user-container">
+                  <Box>
+                   <Image id= "ibage" variant="center" src= {`data:image/jpg;base64,${foto}`} style={{ width: '6.5rem' ,  height: '8.5rem' }} />
+                  </Box>
               
-                <Row>
-                  <Col
-                  id = "item-user"
-                   xs> 
-           
-                   <Image id= "ibage" variant="center" src= {`data:image/jpg;base64,${foto}`} style={{ width: '5.8rem' ,  height: '8rem' }} />
-                  
-                  </Col>  
-
-                  <Col
-                  id = "item-user"
-                   xs={{ order: 1 }}> 
-  
                     <Box>
-                    <FormField label="Registro:" htmlFor="text-input" {...props} >
-                    <TextInput
-                        plain
-                        placeholder="registro"
-                        type = "text" 
-                        id="text-input"
-                        
-                        onChange= {e => 
-                            {
-                            switch (e.target.value.length) {
-                                case 5:
-                                    setValue(`"001150${e.target.value}"`)
-                                break;
-    
-                                case 3:
-                                    setValue(`"00115000${e.target.value}"`)
-                                break;
-    
-                                case 4:
-                                    setValue(`"0011500${e.target.value}"`)
-                                break;
-    
-                                case 6:
-                                    setValue(`"00115${e.target.value}"`)
-                                break;
-                            }         
-                            }}
-                            onKeyDown = {(e) => e.key === 'Enter' ? setReg(value) : ''}
-                            
-                            />
-                    </FormField>
-                        
+
                   
-                    <Row
-                    id = "butoes-entrar-sair"
+                  <Box
+                      width="medium"
+                      direction="column"
+                      margin="xsmall"
+                      align="center"
+                      plain
                     >
-                      
-                      <Button
-                          primary 
-                          color = {"#00739D"}
-                          onClick = {() => setReg(value) }
-                          label="Entrar" />
-                    
 
-                      <Button
-                          primary 
-                          color = {"#00739D"}
-                          onClick = {() => handleLogout()}
-                          label="Sair" 
-                          />
-                    
+                      <Heading
+                      size = "xsmall"
+                      id = "entrar-user"
+                      > Login: </Heading>
 
-                    </Row>
-                   
-                    </Box>
-                  </Col>
-                  <Col 
-                  id = "item-user"
-                 
-                  xs={{ order: 2 }}> 
+                          <TextInput        
+                              placeholder="registro"
+                              type = "text" 
+                              id="text-input"
+                              
+                            onChange= {e => 
+                              {
+                                switch (e.target.value.length) {
+                                    case 5:
+                                      setValue(`001150${e.target.value}`)
+                                      
+                                    break;
+        
+                                    case 3:
+                                      setValue(`00115000${e.target.value}`)
+                                      
+                                    break;
+        
+                                    case 4:
+                                      setValue(`0011500${e.target.value}`)
+                                      
+                                    break;
+        
+                                    case 6:
+                                      setValue(`00115${e.target.value}`)
+                                      
+                                    break;
+                                }         
+                              }}
+                              onKeyDown = {(e) => {
+                                if(e.key === 'Enter') {
+                                  setReg(`"${value}"`)
+                                  setVerifiedUser(value)
 
-                  <div
-                  id = "nome-funcao"
-                  >
-                    <Heading 
-                    id = "nome-user"
-                    size = "xsmall"
-                    alignSelf = "center"
-                    >{getNomeAndSobrenome(nome)}</Heading > 
-                    <Text
-                    id = "funcao-user"
-                    >{nomeFuncao != null ? nomeFuncao.toString().trim() : ''}
-                    </Text>
-                    </div>
-                  </Col>
+                                  }
+                            }}
+                              
+                              />
+                            <Box
+                            width="medium"
+                            direction="row"
+                            margin="xsmall"
+                            align="center"
+                            
+                            >
+                                <TextInput
+                                placeholder="senha"
+                                type={reveal ? "text" : "password"}
+                                id="senha-input"
+                                
+                                
+                                onChange= {e => 
+                                  setCheckSenha(e.target.value) 
+                                  
+                                }
+
+                                onKeyDown = {(e) => {
+                                  if (value != null) {
+                                
+                                    if(e.key === 'Enter') {
+                                    
+                                      setReg(`"${value}"`)
+                                      setVerifiedUser(value)
+                                    }
+                                    }
+                                    
+                                  }}
+                                  
+                                  />
+                                  <Button
+                                    icon={reveal ? <View size="medium" /> : <Hide size="medium" />}
+                                    onClick={() => setReveal(!reveal)}
+                                  />
+                              </Box>
+
+
+                        </Box>
                   
-                </Row>
-             
-              </Container>
-          
-              </Box>
-          
+                  
+                      <Box
+                        width="large"
+                        direction="row"
+                        margin="xsmall"
+                        id = "botoes"
+                        gap = "small"
+                      >
+                     
+                        <Button
+                          primary 
+                          
+                          color = {"#00739D"}
+                          label="Entrar" 
+                          onClick = {() =>{
+                                setReg(`"${value}"`)
+                                setVerifiedUser(value)
+                          }}
+                          />
+
+                        <Button
+                            primary 
+                            color = {"#00739D"}
+                            onClick = {() => handleLogout()}
+                            label="Sair" 
+                            />
+                         
+                        </Box>
+
+                    </Box>
+                
+                    <Box
+                      id = "data-users"
+                    >
+                      <Heading 
+                      id = "nome-user"
+                      size = "xsmall"
+                      alignSelf = "center"
+                      >{getNomeAndSobrenome(nome)}
+                      </Heading > 
+
+                      <Text
+                      id = "funcao-user"
+                      >{nomeFuncao != null ? nomeFuncao.toString().trim() : ''}
+                      </Text>
+                    </Box>
+         </Box>
+      
       </Grommet>
   
     );

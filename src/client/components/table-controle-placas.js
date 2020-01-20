@@ -5,11 +5,14 @@ import {useMutation, useQuery} from '@apollo/react-hooks';
 import * as Ibage from '../../userExample'
 import {Modal, Col, Row, Container} from 'react-bootstrap'
 import {StatusGood,  StatusWarning, CircleInformation, SubtractCircle} from 'grommet-icons';
-import {FormField, Button, TextInput, Text, Heading, Image} from 'grommet';
+import {Grommet, Box, FormField, TextInput, Button,Text, Heading, Image} from 'grommet';
 import '../style/table-controle-placa.css'
 import ButtonBoots from 'react-bootstrap/Button'
 import {Paper} from '@material-ui/core'
 import * as Mutation from '../gql-consts/mutations'
+import { parse } from 'graphql';
+import {Hide , View} from 'grommet-icons';
+
 
 var userAtual 
 var verifiedIsOn = false
@@ -36,6 +39,12 @@ function GetVerfiedUsers(props) {
   const [foto, setFoto] = useState('');
   const [nomeFuncao, setNomeFuncao] = useState();
   const [verifiedUser, setVerifiedUser] = useState();
+  const [reveal, setReveal] = useState(false);
+  const [senha, setSenha] = useState();
+
+
+  const [superIsOn, setSuperIsOn] = useState(false);
+
 
   const GET_USER = gql`
       
@@ -56,6 +65,7 @@ function GetVerfiedUsers(props) {
           registro
           nome
           is_verified
+          is_super
         }
     }    
   `;
@@ -71,19 +81,11 @@ function GetVerfiedUsers(props) {
 
     if (data !== undefined && data.atualiza_colaborador !== null) {
         setFuncao(data.atualiza_colaborador.lista_funcao)
-        setVerifiedUser(value)
-
-        refetch().then( (e) => setNomeFuncao(e.data.lista_funcao !== null ? e.data.lista_funcao.nome_funcao : '') )
-        
-     
+        refetch()
         handleLogon()
-        setNome(data.atualiza_colaborador.nome)
-        //setFuncao(data.atualiza_colaborador.lista_funcao)
-        setFoto(data.atualiza_colaborador.foto)  
         //
   
     } else { 
-      
       setNome(null)
       setFuncao(null)
       setNomeFuncao(null)
@@ -94,22 +96,36 @@ function GetVerfiedUsers(props) {
 
 
   function handleLogon () { 
-    if (data.users_verificado !== null && data.users_verificado.is_verified === "true"){
+    if (data.users_verificado !== null && data.users_verificado.is_verified === "true" && data.users_verificado.senha == senha){
+      setNomeFuncao(data.lista_funcao !== null ? data.lista_funcao.nome_funcao : '') 
+      setNome(data.atualiza_colaborador.nome)
+      //setFuncao(data.atualiza_colaborador.lista_funcao)
+      setFoto(data.atualiza_colaborador.foto)  
       userAtual = data
       verifiedIsOn = true
       setShowModal(props.onHide)
+      setSuperIsOn(data.users_verificado.is_super == "true" ? true : false)
+      console.log(superIsOn)
+      console.log(data.users_verificado)
+
     } else {
       verifiedIsOn = false
+      setReg(null)
+      setSenha(null)
+      
     }
     
   }
 
   function handleLogout() {
+    document.getElementById('senha-input-modal').value = null
+    document.getElementById('text-input-modal').value = null
     setNome('');
     setFuncao('');
     setFoto(Ibage);
     setReg(null)
     setValue(null)
+    setSuperIsOn(false)
     setVerifiedUser (null)
     verifiedIsOn = false
   }
@@ -122,6 +138,7 @@ function GetVerfiedUsers(props) {
       size="lg"
       aria-labelledby="contained-modal-title-vcenter"
       centered
+      dialogClassName = "modal-90w"
     >
       <Modal.Header closeButton>
         <Modal.Title id="contained-modal-title-vcenter">
@@ -129,105 +146,171 @@ function GetVerfiedUsers(props) {
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-      <Container id = "user-container-modal">
-                <Row>
-                  <Col
-                  id = "item-user-modal"
-                   xs> <Image id = 'ibage-modal' variant="center" src= {`data:image/jpg;base64,${foto}`} style={{ width: '5.6rem' ,  height: '7rem' }} /></Col>
-                  
-                  <Col
-                  id = "item-user-modal" 
-                   xs={{ order: 1 }}> 
-  
-  
-                <FormField id ="text-input-modal" label="Login :" htmlFor="text-input-modal" {...props} >
-                  <TextInput
-                      placeholder="registro"
-                      type = "text" 
-                      id="text-input-modal"
+
+
+      <Grommet >
+
+              <Box 
+                id = 'box-user-modal'
+                direction = "row-responsive"
+                align="center"
+                gap = "medium"
+                
+                background = "white"
+                >
+                        <Box>
+                        <Image id= "ibage" variant="center" src= {`data:image/jpg;base64,${foto}`} style={{ width: '6.5rem' ,  height: '8.5rem' }} />
+                        </Box>
+                    
+                          <Box>
+
+                        
+                        <Box
+                            width="medium"
+                            direction="column"
+                            margin="xsmall"
+                            align="center"
+                            plain
+                          >
+
+                            <Heading
+                            size = "xsmall"
+                            id = "entrar-user-modal"
+                            > Login: </Heading>
+
+                                <TextInput        
+                                    placeholder="registro"
+                                    type = "text" 
+                                    id="text-input-modal"
+                                    
+                                  onChange= {e => 
+                                    {
+                                      switch (e.target.value.length) {
+                                          case 5:
+                                            setValue(`001150${e.target.value}`)
+                                            
+                                          break;
+              
+                                          case 3:
+                                            setValue(`00115000${e.target.value}`)
+                                            
+                                          break;
+              
+                                          case 4:
+                                            setValue(`0011500${e.target.value}`)
+                                            
+                                          break;
+              
+                                          case 6:
+                                            setValue(`00115${e.target.value}`)
+                                            
+                                          break;
+                                      }         
+                                    }}
+                                    onKeyDown = {(e) => {
+                                      if(e.key === 'Enter') {
+                                        setReg(`"${value}"`)
+                                        setVerifiedUser(value)
+                                        }
+                                  }}
+                                    
+                                    />
+                                  <Box
+                                  width="medium"
+                                  direction="row"
+                                  margin="xsmall"
+                                  align="center"
+                                  
+                                  >
+                                      <TextInput
+                                      
+                                      placeholder="senha"
+                                      type={reveal ? "text" : "password"}
+                                      id="senha-input-modal"
+                                      
+                                      onChange= {e => 
+                                        setSenha(e.target.value) 
+                                        
+                                      }
+
+                                      onKeyDown = {(e) => {
+                                        if (value != null) {
+                                      
+                                          if(e.key === 'Enter') {
+                                          
+                                            setReg(`"${value}"`)
+                                            setVerifiedUser(value)
+                                          }
+                                          }
+                                          
+                                        }}
+                                        
+                                        />
+                                        <Button
+                                          icon={reveal ? <View size="medium" /> : <Hide size="medium" />}
+                                          onClick={() => setReveal(!reveal)}
+                                        />
+                                    </Box>
+
+
+                              </Box>
+                        
+                        
+                            <Box
+                              width="large"
+                              direction="row"
+                              margin="xsmall"
+                              id = "botoes-modal"
+                              gap = "small"
+                            >
+                          
+                              <Button
+                                primary 
+                                
+                                color = {"#00739D"}
+                                label="Entrar" 
+                                onClick = {() =>{
+                                      setReg(`"${value}"`)
+                                      setVerifiedUser(value)
+                                }}
+                                />
+
+                              <Button
+                                  primary 
+                                  color = {"#00739D"}
+                                  onClick = {() => handleLogout()}
+                                  label="Sair" 
+                                  />
+                              
+                              </Box>
+
+                          </Box>
                       
-                      onChange= {e => 
-                        {
-                          switch (e.target.value.length) {
-                              case 5:
-                                setValue(`001150${e.target.value}`)
-                                
-                              break;
-  
-                              case 3:
-                                setValue(`00115000${e.target.value}`)
-                                
-                              break;
-  
-                              case 4:
-                                setValue(`0011500${e.target.value}`)
-                                
-                              break;
-  
-                              case 6:
-                                setValue(`00115${e.target.value}`)
-                                
-                              break;
-                          }         
-                        }}
-                        onKeyDown = {(e) => {
-                          if(e.key === 'Enter') {
-                             setReg(`"${value}"`)
-                            setVerifiedUser(value)
-                            }
-                      }}
-                        
-                        />
-                        
-                  
-                </FormField>
-                    
-                <Row
-                    id = "butoes-entrar-sair-modal"
-                    >
-                  
-                    <Button
-                      primary 
-                      color = {"#00739D"}
-                      label="Entrar" 
-                      onClick = {() =>{
-                         
-                             setReg(`"${value}"`)
-                            setVerifiedUser(value)
-                       
-                      }}
-                    
-                     // onClick = {}
-                      />
+                          <Box
+                            id = "data-users-modal"
+                          >
+                            <Heading 
+                            id = "nome-user-modal"
+                            size = "xsmall"
+                            alignSelf = "center"
+                            >{getNomeAndSobrenome(nome)}
+                            </Heading > 
 
-                    <Button
-                    primary 
-                    color = {"#00739D"}
-                    onClick = {() => handleLogout()}
-                    label="Sair" 
-                    />
-                    
-                    </Row>
-                  </Col>
-                 
-                  <Col 
-                  id = "item-user-modal"
-                 
-                  xs={{ order: 2 }}> 
-                    <Heading 
-                    id = "nome-user-modal"
-                    size = "xsmall"
-                    alignSelf = "center"
-                    >{getNomeAndSobrenome(nome)}</Heading > 
-                    <Text
-                    id = "funcao-user-modal"
-                    >{nomeFuncao != null ? nomeFuncao.toString().trim() : ''}
-                    </Text>
-                  </Col>
-                </Row>
-              </Container>
-
+                            <Text
+                            id = "funcao-user-modal"
+                            >{nomeFuncao != null ? nomeFuncao.toString().trim() : ''}
+                            </Text>
+                          </Box>
+              </Box>
+                
+            </Grommet>
+            
       
+      <ButtonBoots
+      hidden = {!superIsOn}
+      >
+        TESTE
+      </ButtonBoots>
 
       </Modal.Body>
       <Modal.Footer>
@@ -384,7 +467,7 @@ function TableControleDePlacas(props) {
                     situacao : 'ok',
                     local : `${props.local}`,
                     qtdParaSituacaoBaixa: 3,
-                    qtdParaSituacaoOk: 2,
+                    qtdParaSituacaoOk: parseInt(newData.qtdParaSituacaoOk),
                     regUltimaEdicao: userAtual.atualiza_colaborador.registro,
                     fotoUltimoUser: userAtual.atualiza_colaborador.foto
                 }}).then(() => refetch({query: GET_ALL_BOARDS}))
@@ -444,8 +527,7 @@ function TableControleDePlacas(props) {
         })}
 
     function requests() {
-      if(data !== undefined){
-
+      if(data !== undefined){         
         if (!unidadeAtual.indexOf('placasWentex')) {
           var tempList = []
           for (let i = 0; i < data.placasWentex.length; i++) {
@@ -464,6 +546,7 @@ function TableControleDePlacas(props) {
           }
 
         }
+        
         
         setState({data: tempList})
       }

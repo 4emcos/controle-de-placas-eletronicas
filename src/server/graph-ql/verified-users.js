@@ -13,6 +13,7 @@ export const typeDefs = gql`
         senha: String
         nome: String
         is_verified: String
+        is_super: String
     }
 
 `

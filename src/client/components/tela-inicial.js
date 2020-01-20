@@ -3,11 +3,6 @@ import {Row, Container, Col, Button, Collapse } from 'react-bootstrap';
 import TableGeral from './render-tables'
 import '../style/tela-inicial.css'
 
-
-
-
-
-
 function TelaInicial(props) {
     const [openAbTable, setOpenAbTable] = useState(false);
     const [openCaTable, setOpenCaTable] = useState(false);
@@ -17,6 +12,7 @@ function TelaInicial(props) {
 
     const ops = [
       {renderTextOp: 'Placas da Abertura', nameOp: 'abertura',  hook: openAbTable, setHook: setOpenAbTable},
+
       {renderTextOp: 'Placas das Cardas', nameOp: 'cardas', hook: openCaTable, setHook: setOpenCaTable},
       {renderTextOp: 'Placas do fuso', nameOp: 'fuso', hook: openFuTable, setHook: setOpenFuTable},
       {renderTextOp: 'Placas da Open-End', nameOp: 'openend', hook: openOeTable, setHook: setOpenOeTable},
@@ -58,7 +54,6 @@ function TelaInicial(props) {
   
                   <Collapse in={op.hook}>
                   <div id= {`placas-${op.nameOp}-collapse`}>
-                   
                   <TableGeral local = {op.nameOp} unidade = {props.unidade === "Embratex" ? ['placasEmbratex', 'placaEmbratex'] : ['placasWentex', 'placaWentex']} />
                  
                   </div>

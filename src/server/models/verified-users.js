@@ -16,7 +16,10 @@ module.exports = function(sequelize, DataTypes) {
 		is_verified: {
 			type: DataTypes.STRING(5),
 			allowNull:false
-
+		},
+		is_super: {
+			type: DataTypes.STRING(10),
+			allowNull:false
 		}
 	}, {
 		tableName: 'users_system',
